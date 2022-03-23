@@ -1,6 +1,7 @@
 using DatingAppSocial.Data;
 using DatingAppSocial.Extensions;
 using DatingAppSocial.Interfaces;
+using DatingAppSocial.Middleware;
 using DatingAppSocial.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -55,12 +56,14 @@ namespace DatingAppSocial
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+              
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DatingAppSocial v1"));
             }
 
-            app.UseHttpsRedirection();
+            app.UseMiddleware<ExceptionMiddleware>();
+
+           // app.UseHttpsRedirection();
 
             app.UseRouting();
             app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
