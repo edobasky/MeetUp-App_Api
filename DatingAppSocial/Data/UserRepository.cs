@@ -29,9 +29,11 @@ namespace DatingAppSocial.Data
                 .FirstOrDefaultAsync();
         }
 
-        public Task<IEnumerable<MembersDto>> GetMembersAsync()
+        public async Task<IEnumerable<MembersDto>> GetMembersAsync()
         {
-            throw new System.NotImplementedException();
+            return await _context.User
+                .ProjectTo<MembersDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
         }
 
         public async Task<AppUser> GetUserByIdAsync(int id)
