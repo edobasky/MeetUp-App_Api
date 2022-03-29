@@ -3,6 +3,7 @@ using DatingAppSocial.Data;
 using DatingAppSocial.DTOs;
 using DatingAppSocial.Entities;
 using DatingAppSocial.Extensions;
+using DatingAppSocial.Helpers;
 using DatingAppSocial.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -32,9 +33,17 @@ namespace DatingAppSocial.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MembersDto>>> GetUsers()
-        {
-            var users = await _userRepository.GetMembersAsync();
+        public async Task<ActionResult<IEnumerable<MembersDto>>> GetUsers([FromQuery]UserParams userParams)
+         {
+            var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+            userParams.CurrentUsername = user.UserName;
+
+            if(string.IsNullOrEmpty(userParams.Gender))
+            {
+                userParams.Gender = user.Gender == "male" ? "female" : "male";
+            }
+            var users = await _userRepository.GetMembersAsync(userParams);
+            Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
             return Ok(users);
         }
 
